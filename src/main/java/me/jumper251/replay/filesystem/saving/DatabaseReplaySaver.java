@@ -93,7 +93,6 @@ public class DatabaseReplaySaver implements IReplaySaver {
 	@Override
 	public void deleteReplay(String replayName) {
 		DatabaseRegistry.getDatabase().getService().deleteReplay(replayName);
-		
 		updateCache(replayName, null);
 	}
 
@@ -111,8 +110,6 @@ public class DatabaseReplaySaver implements IReplaySaver {
 	private void updateCache(String id, ReplayInfo info) {
 		if (info != null && id != null) {
 			replayCache.put(id, info);
-		} else if (replayCache.containsKey(id)) {
-			replayCache.remove(id);
-		}
+		} else replayCache.remove(id);
 	}
 }

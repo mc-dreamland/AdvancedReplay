@@ -54,7 +54,7 @@ public class MongoDBService extends DatabaseService {
 
     @Override
     public void deleteReplay(String id) {
-        databaseWrapper.open(dbCollection -> dbCollection.remove(new BasicDBObject("_id", id)));
+        databaseWrapper.remove(id);
         gridFS.remove(id);
     }
 

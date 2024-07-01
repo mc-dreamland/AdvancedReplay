@@ -1,22 +1,20 @@
 package me.jumper251.replay.commands.replay;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import me.jumper251.replay.ReplaySystem;
+import me.jumper251.replay.api.ReplayAPI;
+import me.jumper251.replay.commands.AbstractCommand;
+import me.jumper251.replay.commands.SubCommand;
+import me.jumper251.replay.utils.MathUtils;
+import me.jumper251.replay.utils.ReplayManager;
+import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import me.jumper251.replay.ReplaySystem;
-import me.jumper251.replay.api.ReplayAPI;
-import me.jumper251.replay.commands.AbstractCommand;
-import me.jumper251.replay.commands.SubCommand;
-import me.jumper251.replay.filesystem.saving.ReplaySaver;
-import me.jumper251.replay.utils.MathUtils;
-import me.jumper251.replay.utils.ReplayManager;
-import me.jumper251.replay.utils.StringUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReplayStartCommand extends SubCommand {
 
@@ -70,7 +68,7 @@ public class ReplayStartCommand extends SubCommand {
 				public void run() {
 					ReplayAPI.getInstance().stopReplay(name, true, true);
 				}
-			}.runTaskLater(ReplaySystem.getInstance(), duration * 20);
+			}.runTaskLater(ReplaySystem.getInstance(), duration * 20L);
 		}
 		
 		if (args.length <= 2) {
@@ -86,14 +84,14 @@ public class ReplayStartCommand extends SubCommand {
 			String[] split = args[1].split(":");	
 			
 			if (args[1].contains(":")) {
-				if (split.length == 2 && split[0].length() > 0) return split[0];
+				if (split.length == 2 && !split[0].isEmpty()) return split[0];
 			} else {
 				return args[1];
 			}
 		}
 
-		
-		return StringUtils.getRandomString(6);
+
+		return RandomStringUtils.randomAlphanumeric(6);
 	}
 	
 	private int parseDuration(String[] args) {

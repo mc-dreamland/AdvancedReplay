@@ -9,8 +9,7 @@ public class MathUtils {
 
 	public static int randInt(int min, int max) {
 	    Random rand = new Random();
-	    int randomNum = rand.nextInt((max - min) + 1) + min;
-	    return randomNum;
+        return rand.nextInt((max - min) + 1) + min;
 	}
 	
 	public static double round(double number, double amount){				
@@ -19,27 +18,14 @@ public class MathUtils {
 	}
 	
 	public static double getAverageDouble(List<Double> list){
-		if(list == null) return -1;
-		if(list.size() == 0) return -1;
-		double avg = 0;
-		for(double val : list){
-			avg += val;
-		}
-		avg /= list.size();
-		
+		if(list == null || list.isEmpty()) return -1;
+		double avg = list.stream().mapToDouble(val -> val).average().orElse(-1);
 		return round(avg, 100);
 	}
 	
 	public static int getAverageInt(List<Integer> list){
-		if(list == null) return -1;
-		if(list.size() == 0) return -1;
-		int avg = 0;
-		for(int val : list){
-			avg += val;
-		}
-		avg /= list.size();
-		
-		return avg;
+		if(list == null || list.isEmpty()) return -1;
+        return list.stream().mapToInt(val -> val).sum() / list.size();
 	}
 	
 	  public static boolean isInt(String string)  {

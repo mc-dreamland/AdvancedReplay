@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -81,7 +82,7 @@ public class PacketNPCOld implements INPC{
 	}
 	
 	public PacketNPCOld() {
-		this(MathUtils.randInt(50000, 400000), UUID.randomUUID(), StringUtils.getRandomString(6));
+		this(MathUtils.randInt(50000, 400000), UUID.randomUUID(), RandomStringUtils.randomAlphanumeric(6));
 	}
 	
 	public void spawn(Location loc, int tabMode, Player... players) {

@@ -1,22 +1,18 @@
 package me.jumper251.replay.replaysystem;
 
-import java.util.Arrays;
-
-import java.util.List;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
-
 import me.jumper251.replay.ReplaySystem;
 import me.jumper251.replay.replaysystem.data.ReplayData;
 import me.jumper251.replay.replaysystem.data.ReplayInfo;
 import me.jumper251.replay.replaysystem.recording.Recorder;
 import me.jumper251.replay.replaysystem.replaying.Replayer;
 import me.jumper251.replay.utils.ReplayManager;
-import me.jumper251.replay.utils.StringUtils;
+import org.apache.commons.lang.RandomStringUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class Replay {
 
@@ -32,7 +28,7 @@ public class Replay {
 	private boolean isRecording, isPlaying;
 	
 	public Replay() {
-		this.id = UUID.randomUUID().toString();
+		this.id = RandomStringUtils.randomAlphanumeric(6);
 		this.data = new ReplayData();
 		this.isRecording = false;
 		this.isPlaying = false;
