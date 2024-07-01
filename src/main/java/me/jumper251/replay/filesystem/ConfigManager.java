@@ -1,24 +1,24 @@
 package me.jumper251.replay.filesystem;
 
-import java.io.File;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
+import me.jumper251.replay.ReplaySystem;
+import me.jumper251.replay.database.DatabaseRegistry;
+import me.jumper251.replay.database.MongoDBDatabase;
+import me.jumper251.replay.database.MySQLDatabase;
+import me.jumper251.replay.replaysystem.recording.optimization.ReplayQuality;
+import me.jumper251.replay.utils.LogUtils;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import me.jumper251.replay.ReplaySystem;
-import me.jumper251.replay.database.DatabaseRegistry;
-import me.jumper251.replay.database.MySQLDatabase;
-import me.jumper251.replay.replaysystem.recording.optimization.ReplayQuality;
-import me.jumper251.replay.utils.LogUtils;
+import java.io.File;
+import java.io.IOException;
 
 public class ConfigManager {
 
 	public static File sqlFile = new File(ReplaySystem.getInstance().getDataFolder(), "mysql.yml");
 	public static FileConfiguration sqlCfg = YamlConfiguration.loadConfiguration(sqlFile);
+	public static File mongoFile = new File(ReplaySystem.getInstance().getDataFolder(), "mongo.yml");
+	public static FileConfiguration mongoCfg = YamlConfiguration.loadConfiguration(mongoFile);
 	
 	public static File file = new File(ReplaySystem.getInstance().getDataFolder(), "config.yml");
 	public static FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -28,7 +28,7 @@ public class ConfigManager {
 	public static boolean RECORD_BLOCKS, REAL_CHANGES;
 	public static boolean RECORD_ITEMS, RECORD_ENTITIES;
 	public static boolean RECORD_CHAT;
-	public static boolean SAVE_STOP, RECORD_STARTUP, USE_OFFLINE_SKINS, HIDE_PLAYERS, UPDATE_NOTIFY, USE_DATABASE, ADD_PLAYERS;
+	public static boolean SAVE_STOP, RECORD_STARTUP, USE_OFFLINE_SKINS, HIDE_PLAYERS, UPDATE_NOTIFY, USE_DATABASE, ADD_PLAYERS, USE_MONGODB;
 	public static boolean WORLD_RESET;
 	
 	public static ReplayQuality QUALITY = ReplayQuality.HIGH;
@@ -50,6 +50,17 @@ public class ConfigManager {
 				e.printStackTrace();
 			}
 		}
+
+		if(!mongoFile.exists()){
+			mongoCfg.set("database", "advanced_replay");
+			mongoCfg.set("bucket", "replays");
+
+			try {
+				mongoCfg.save(mongoFile);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		
 		if (!file.exists()) {
 			LogUtils.log("Creating Config files...");
@@ -58,6 +69,7 @@ public class ConfigManager {
 			cfg.set("general.record_on_startup", false);
 			cfg.set("general.save_on_stop", false);
 			cfg.set("general.use_mysql", false);
+			cfg.set("general.use_mongodb", false);
 			cfg.set("general.use_offline_skins", false);
 			cfg.set("general.quality", "high");
 			cfg.set("general.cleanup_replays", -1);
@@ -102,7 +114,10 @@ public class ConfigManager {
 		CLEANUP_REPLAYS = cfg.getInt("general.cleanup_replays", -1);
 		ADD_PLAYERS = cfg.getBoolean("general.add_new_players");
 		UPDATE_NOTIFY = cfg.getBoolean("general.update_notifications");
-		if (initial ) USE_DATABASE = cfg.getBoolean("general.use_mysql");
+		if (initial) {
+			USE_DATABASE = cfg.getBoolean("general.use_mysql");
+			USE_MONGODB = cfg.getBoolean("general.use_mongodb");
+		}
 
 		DEATH_MESSAGE = cfg.getString("general.death_message");
 		LEAVE_MESSAGE = cfg.getString("general.quit_message");
@@ -130,6 +145,12 @@ public class ConfigManager {
 			DatabaseRegistry.registerDatabase(mysql);
 			DatabaseRegistry.getDatabase().getService().createReplayTable();
 			
+		} else if (USE_MONGODB) {
+			String database = mongoCfg.getString("database");
+			String bucket = mongoCfg.getString("bucket");
+			MongoDBDatabase mongoDBDatabase = new MongoDBDatabase(database, bucket);
+			DatabaseRegistry.registerDatabase(mongoDBDatabase);
+			DatabaseRegistry.getDatabase().getService().createReplayTable();
 		}
 
 
@@ -140,14 +161,10 @@ public class ConfigManager {
 		try {
 			cfg.load(file);
 			ItemConfig.cfg.load(ItemConfig.file);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InvalidConfigurationException e) {
+		} catch (InvalidConfigurationException | IOException e) {
 			e.printStackTrace();
 		}
-		
-		loadData(false);
+
+        loadData(false);
 	}
 }

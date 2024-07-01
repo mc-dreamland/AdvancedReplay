@@ -3,6 +3,7 @@ package me.jumper251.replay.replaysystem;
 import java.util.Arrays;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -31,7 +32,7 @@ public class Replay {
 	private boolean isRecording, isPlaying;
 	
 	public Replay() {
-		this.id = StringUtils.getRandomString(6);
+		this.id = UUID.randomUUID().toString();
 		this.data = new ReplayData();
 		this.isRecording = false;
 		this.isPlaying = false;

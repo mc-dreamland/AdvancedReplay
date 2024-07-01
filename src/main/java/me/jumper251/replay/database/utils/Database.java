@@ -17,7 +17,10 @@ public abstract class Database {
     		
     		connect();
     }
-    
+
+    public Database() {
+    }
+
     public abstract void connect(); 
     
     public abstract void disconnect();
